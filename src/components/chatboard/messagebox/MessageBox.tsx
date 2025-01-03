@@ -30,8 +30,8 @@ const MessageBox = () => {
               <IoMdInformationCircleOutline className="text-[25px] cursor-pointer text-gray-400" />
             </div>
           </div>
-          <div className="px-8 pt-2 h-[calc(100vh-240px)] overflow-scroll">
-            {Array.from({ length: 3 }).map((_, index) => {
+          <div className="px-8 pt-2 h-[calc(100vh-240px)] flex flex-col  overflow-y-auto">
+            {Array.from({ length: 20 }).map((_, index) => {
               return <Messages key={index} />;
             })}
           </div>
