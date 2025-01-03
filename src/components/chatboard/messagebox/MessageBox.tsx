@@ -8,24 +8,32 @@ import {
   AiOutlineSend,
   AiOutlineLike,
 } from "react-icons/ai";
+import Messages from "./Messages";
 const MessageBox = () => {
   return (
     <div className="  border-l border-gray-700">
       <div className="flex flex-col justify-between h-[calc(100vh-80px)] ">
-        <div className="flex px-6 py-4 justify-between items-center border-b border-gray-700 ">
-          <div className="flex gap-3 items-center cursor-pointer  rounded-lg">
-            <h1 className="text-lg flex justify-center items-center bg-slate-500 text-white p-2 rounded-full h-10 w-10">
-              An
-            </h1>
-            <div>
-              <h1 className="text-lg font-bold">Anirban das joy</h1>
-              <p className="text-sm">Active 2 mins ago</p>
+        <div>
+          <div className="flex px-6 py-4 justify-between items-center border-b border-gray-700 ">
+            <div className="flex gap-3 items-center cursor-pointer  rounded-lg">
+              <h1 className="text-lg flex justify-center items-center bg-slate-500 text-white p-2 rounded-full h-10 w-10">
+                An
+              </h1>
+              <div>
+                <h1 className="text-lg font-bold">Anirban das joy</h1>
+                <p className="text-sm">Active 2 mins ago</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-5">
+              <IoCallOutline className="text-[25px] cursor-pointer text-gray-400" />
+              <MdVideoCall className="text-[25px] cursor-pointer text-gray-400" />
+              <IoMdInformationCircleOutline className="text-[25px] cursor-pointer text-gray-400" />
             </div>
           </div>
-          <div className="flex items-center gap-5">
-            <IoCallOutline className="text-[25px] cursor-pointer text-gray-400" />
-            <MdVideoCall className="text-[25px] cursor-pointer text-gray-400" />
-            <IoMdInformationCircleOutline className="text-[25px] cursor-pointer text-gray-400" />
+          <div className="px-8 pt-2 h-[calc(100vh-240px)] overflow-scroll">
+            {Array.from({ length: 3 }).map((_, index) => {
+              return <Messages key={index} />;
+            })}
           </div>
         </div>
         <div className="px-6 py-3">
