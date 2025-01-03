@@ -111,7 +111,7 @@ const Registration: React.FC = () => {
           <div className="flex sm:justify-end gap-1">
             <span className="text-zinc-300 text-sm ">Not Create Account?</span>
             <Link
-              href="/singup"
+              href="/signup"
               className="text-green-400 text-sm hover:underline"
             >
               Sign Up

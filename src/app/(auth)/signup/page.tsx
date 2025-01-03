@@ -3,6 +3,8 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import React from "react";
+import { useHandleProcessSingUpMutation } from "@/redux/features/user/userApi";
+import toast from "react-hot-toast";
 
 interface FormData {
   name: string;
@@ -12,6 +14,8 @@ interface FormData {
 }
 
 const Registration: React.FC = () => {
+  const [setProcessSingUpData, { isLoading }] =
+    useHandleProcessSingUpMutation();
   const {
     register,
     handleSubmit,
@@ -19,7 +23,15 @@ const Registration: React.FC = () => {
   } = useForm<FormData>();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
+    try {
+      await setProcessSingUpData(data).unwrap();
+      toast.success(
+        "Account created successfully. Please Activate your account"
+      );
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.data?.payload?.message || "An error occurred");
+    }
   };
 
   return (
@@ -169,7 +181,7 @@ const Registration: React.FC = () => {
             type="submit"
             className="bg-green-600 text-gray-200 py-2 px-6 text-sm rounded-md w-full sm:w-auto"
           >
-            Continue
+            {isLoading ? "Creating Account..." : "Create Account"}
           </button>
         </div>
       </form>
