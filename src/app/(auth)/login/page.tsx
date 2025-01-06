@@ -2,6 +2,10 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import React from "react";
+import { useHandleLoginMutation } from "@/redux/features/auth/authApi";
+import Loading from "@/components/auth/loading/Loading";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   name: string;
@@ -10,6 +14,8 @@ interface FormData {
 }
 
 const Registration: React.FC = () => {
+  const [setLoginData, { isLoading }] = useHandleLoginMutation();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -17,8 +23,22 @@ const Registration: React.FC = () => {
   } = useForm<FormData>();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    console.log(data);
+    try {
+      await setLoginData({
+        email: data.email,
+        password: data.password,
+      }).unwrap();
+      toast.success("Logged In Successfully");
+      router.push("/");
+    } catch (error: any) {
+      toast.error(error?.data?.payload?.message);
+      console.log(error);
+    }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex justify-center  items-center min-h-screen px-4 sm:px-8 lg:px-0">

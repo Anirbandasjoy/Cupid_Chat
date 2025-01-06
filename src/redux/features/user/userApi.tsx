@@ -1,14 +1,14 @@
-import baseAuthApi from "@/redux/api/baseApi";
+import cupidChatApi from "@/redux/api/baseApi";
 import {
   currentUserResponse,
-  logOutResponse,
+  findAllUserRequest,
+  findAllUsersResponse,
   processSingUpRequest,
   processSingUpResponse,
-  signupRequest,
   signupResponse,
 } from "./interface";
 
-const userApi = baseAuthApi.injectEndpoints({
+const userApi = cupidChatApi.injectEndpoints({
   endpoints: (builder) => ({
     handleProcessSingUp: builder.mutation<
       processSingUpResponse,
@@ -29,22 +29,25 @@ const userApi = baseAuthApi.injectEndpoints({
       }),
     }),
 
-    handleLogOut: builder.mutation<logOutResponse, void>({
-      query: () => ({
-        url: "/auth/logOut",
-        method: "POST",
-      }),
-    }),
     handleGetCurrentUser: builder.query<currentUserResponse, void>({
-      query: () => "/auth/current-user",
+      query: () => "/user/current-user",
     }),
+    handleFindAllUsers: builder.query<findAllUsersResponse, findAllUserRequest>(
+      {
+        query: ({ search }) => ({
+          url: "/user/find-users",
+          method: "GET",
+          params: { search },
+        }),
+      }
+    ),
   }),
   overrideExisting: false,
 });
 
 export const {
   useHandleSingupMutation,
-  useHandleLogOutMutation,
+  useHandleFindAllUsersQuery,
   useHandleProcessSingUpMutation,
   useHandleGetCurrentUserQuery,
 } = userApi;

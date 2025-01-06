@@ -6,22 +6,23 @@ import Loading from "../auth/loading/Loading";
 import { useHandleGetCurrentUserQuery } from "@/redux/features/user/userApi";
 
 const PribetRoute = ({ children }: { children: React.ReactNode }) => {
-  const { data, isLoading } = useHandleGetCurrentUserQuery();
+  const { data, isLoading, isError } = useHandleGetCurrentUserQuery();
+  console.log({ data });
   const userInfo = data?.payload;
+  console.log({ userInfo });
   const router = useRouter();
 
   useEffect(() => {
-    if (!userInfo?.email) {
+    if (!isLoading && !data?.success) {
       router.push("/login");
-    } else {
     }
-  }, [userInfo, router]);
+  }, [data, isLoading, router]);
 
   if (isLoading) {
     return <Loading />;
   }
 
-  return <>{userInfo?.email ? children : null}</>;
+  return <>{userInfo ? children : null}</>;
 };
 
 export default PribetRoute;

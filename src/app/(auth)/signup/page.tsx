@@ -6,6 +6,8 @@ import React from "react";
 import { useHandleProcessSingUpMutation } from "@/redux/features/user/userApi";
 import toast from "react-hot-toast";
 
+import Loading from "@/components/auth/loading/Loading";
+
 interface FormData {
   name: string;
   email: string;
@@ -33,6 +35,10 @@ const Registration: React.FC = () => {
       toast.error(error?.data?.payload?.message || "An error occurred");
     }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4 sm:px-8 lg:px-0">
@@ -181,7 +187,7 @@ const Registration: React.FC = () => {
             type="submit"
             className="bg-green-600 text-gray-200 py-2 px-6 text-sm rounded-md w-full sm:w-auto"
           >
-            {isLoading ? "Creating Account..." : "Create Account"}
+            Create Account
           </button>
         </div>
       </form>

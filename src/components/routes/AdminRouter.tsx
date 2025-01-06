@@ -11,11 +11,11 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!userInfo?.email) {
+    if (!isLoading && !data?.success) {
       router.push("/login");
       return;
     }
-    if (userInfo?.role !== "admin") {
+    if (!isLoading && userInfo?.role !== "admin") {
       router.push("/");
       return;
     }
