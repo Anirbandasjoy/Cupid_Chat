@@ -38,9 +38,8 @@ const MessageBox = () => {
   const chatId = useSelector((state: RootState) => state.chat.chatId);
   const { data: currentUser } = useHandleGetCurrentUserQuery();
   const loggedInEmail = currentUser?.payload?.email;
-  const messageEndRef = useRef<HTMLDivElement>(null); // Ref for scroll to bottom
+  const messageEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -51,8 +50,10 @@ const MessageBox = () => {
     const createChat = async () => {
       if (selectedUser) {
         try {
-          const data = await setChat({ receiverId: selectedUser._id }).unwrap();
-          dispatch(setChatId(data?.payload?._id));
+          const response = await setChat({
+            receiverId: selectedUser._id,
+          }).unwrap();
+          dispatch(setChatId(response?.payload?._id));
           toast.success("New Chat Created");
         } catch (error: any) {
           dispatch(setChatId(error?.data?.payload?.chatId));
@@ -62,9 +63,8 @@ const MessageBox = () => {
     };
 
     createChat();
-  }, [selectedUser, setChat]);
+  }, [selectedUser, setChat, dispatch]);
 
-  // Send message handler
   const handleSendMessage = async () => {
     if (!message.trim()) {
       toast.error("Message cannot be empty! Please type something.");
@@ -90,8 +90,7 @@ const MessageBox = () => {
   };
 
   useEffect(() => {
-    socket.on("receive_message", (message) => {
-      console.log("receive_message", message);
+    socket.on("receive_message", () => {
       refetch();
     });
 
@@ -100,7 +99,6 @@ const MessageBox = () => {
     };
   }, [socket, refetch]);
 
-  // Loading state if no selected user
   if (!selectedUser) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-80px)] border-l border-gray-700">

@@ -1,6 +1,7 @@
 import MessageBox from "@/components/chatboard/messagebox/MessageBox";
 import ChartSidebar from "@/components/chatboard/shared/ChartSidebar";
 import { SocketProvider } from "@/components/chatboard/socket/SocketProvider";
+
 import PribetRoute from "@/components/routes/PribetRouter";
 const WellCome = () => {
   return (
