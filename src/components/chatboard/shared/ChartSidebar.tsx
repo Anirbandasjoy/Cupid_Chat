@@ -4,8 +4,12 @@ import { TiEdit } from "react-icons/ti";
 import ProfileDropdown from "./Dropdown";
 import { useHandleFindAllUsersQuery } from "@/redux/features/user/userApi";
 import { IUser } from "@/redux/features/user/interface";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/app/store";
+import { setSelectedUser } from "@/redux/features/user/selectUserSlice";
 
 const ChartSidebar = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { data } = useHandleFindAllUsersQuery({ search: searchTerm });
 
@@ -39,6 +43,7 @@ const ChartSidebar = () => {
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user: IUser) => (
             <div
+              onClick={() => dispatch(setSelectedUser(user))}
               key={user?._id}
               className="flex gap-3 items-center cursor-pointer hover:bg-[#47474c] px-4 py-3 rounded-lg"
             >

@@ -5,24 +5,26 @@ import React, { useEffect } from "react";
 import Loading from "../auth/loading/Loading";
 import { useHandleGetCurrentUserQuery } from "@/redux/features/user/userApi";
 
-const PribetRoute = ({ children }: { children: React.ReactNode }) => {
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { data, isLoading, isError } = useHandleGetCurrentUserQuery();
-  console.log({ data });
   const userInfo = data?.payload;
-  console.log({ userInfo });
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !data?.success) {
+    if (!isLoading && (!data?.success || isError)) {
       router.push("/login");
     }
-  }, [data, isLoading, router]);
+  }, [data?.success, isError, isLoading, router]);
 
   if (isLoading) {
     return <Loading />;
   }
 
-  return <>{userInfo ? children : null}</>;
+  if (isError || !userInfo) {
+    return null;
+  }
+
+  return <>{children}</>;
 };
 
-export default PribetRoute;
+export default PrivateRoute;
