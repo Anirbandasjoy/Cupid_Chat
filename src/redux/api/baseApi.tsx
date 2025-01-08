@@ -7,7 +7,8 @@ import {
 } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5000/api/v1",
+  // baseUrl: "http://localhost:5000/api/v1",
+  baseUrl: "https://cupid-server.vercel.app/api/v1",
   credentials: "include",
 });
 
