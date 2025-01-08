@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const serverUrl = "http://localhost:5000"; // Update with your actual server URL
+const serverUrl = "https://cupid-server.vercel.app";
 
 const SocketContext = createContext<Socket | null>(null);
 
