@@ -22,7 +22,7 @@ const ActiveAcount = () => {
         try {
           await setActiveAccount(token).unwrap();
           setActivationSuccess(true);
-          setTimeout(() => router.push("/"), 3000);
+          setTimeout(() => router.push("/login"), 2000);
         } catch (error: any) {
           console.log(error);
           toast.error(error?.data?.payload?.message || "faild activation");

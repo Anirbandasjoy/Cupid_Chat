@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { IoCallOutline } from "react-icons/io5";
@@ -19,7 +20,6 @@ import {
 import toast from "react-hot-toast";
 import { setChatId } from "@/redux/features/chat/chatSlice";
 import { useHandleGetCurrentUserQuery } from "@/redux/features/user/userApi";
-
 import { useSocket } from "../socket/SocketProvider";
 
 const MessageBox = () => {
@@ -34,11 +34,17 @@ const MessageBox = () => {
     chatId: useSelector((state: RootState) => state.chat.chatId) || "",
   });
   const messages = data?.payload?.messages || [];
+
   const [message, setMessage] = useState<string>("");
   const chatId = useSelector((state: RootState) => state.chat.chatId);
   const { data: currentUser } = useHandleGetCurrentUserQuery();
   const loggedInEmail = currentUser?.payload?.email;
+  const userName = currentUser?.payload?.name;
   const messageEndRef = useRef<HTMLDivElement>(null);
+
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState<string | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (messageEndRef.current) {
@@ -56,8 +62,8 @@ const MessageBox = () => {
           dispatch(setChatId(response?.payload?._id));
           toast.success("New Chat Created");
         } catch (error: any) {
+          console.log(error);
           dispatch(setChatId(error?.data?.payload?.chatId));
-          toast.error(error?.data?.payload?.message || "An error occurred");
         }
       }
     };
@@ -83,6 +89,7 @@ const MessageBox = () => {
         });
         refetch();
         setMessage("");
+        socket.emit("stop_typing", { chatId, user: userName });
       } catch (error: any) {
         toast.error(error?.data?.payload?.message || "Something went wrong");
       }
@@ -94,10 +101,42 @@ const MessageBox = () => {
       refetch();
     });
 
+    socket.on("user_typing", (data) => {
+      if (data.chatId === chatId && data.user !== loggedInEmail) {
+        setTypingUser(data.user);
+      }
+    });
+
+    socket.on("user_stopped_typing", (data) => {
+      if (data.chatId === chatId) {
+        setTypingUser(null);
+      }
+    });
+
     return () => {
       socket.off("receive_message");
+      socket.off("user_typing");
+      socket.off("user_stopped_typing");
     };
-  }, [socket, refetch]);
+  }, [socket, refetch, chatId, loggedInEmail]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    } else {
+      if (!isTyping) {
+        setIsTyping(true);
+        socket.emit("typing", { chatId, user: userName });
+      }
+
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+        socket.emit("stop_typing", { chatId, user: userName });
+      }, 1000);
+    }
+  };
 
   if (!selectedUser) {
     return (
@@ -111,7 +150,7 @@ const MessageBox = () => {
     <div className="border-l border-gray-700">
       <div className="flex flex-col justify-between h-[calc(100vh-80px)]">
         <div>
-          <div className="flex px-6 py-4 justify-between items-center border-b border-gray-700">
+          <div className="flex px-6 py-4 justify-between items-center border-b border-gray-700 flex-wrap">
             <div className="flex gap-3 items-center cursor-pointer rounded-lg">
               <h1 className="text-lg flex justify-center items-center bg-slate-500 text-white p-2 rounded-full h-10 w-10">
                 {selectedUser?.name?.charAt(0).toUpperCase()}
@@ -120,7 +159,11 @@ const MessageBox = () => {
                 <h1 className="text-lg font-bold">
                   {selectedUser?.name || "empty"}
                 </h1>
-                <p className="text-sm">Active 2 mins ago</p>
+                {typingUser ? (
+                  <p className="text-sm text-gray-400">{`${typingUser} is typing...`}</p>
+                ) : (
+                  <p className="text-sm">Active 2 mins ago</p>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-5">
@@ -139,10 +182,10 @@ const MessageBox = () => {
                   sender={msg?.sender}
                   content={msg?.content}
                   isSent={msg?.sender.email === loggedInEmail}
+                  createdAt={msg?.createdAt}
                 />
               ))
             )}
-            {/* Scroll to bottom */}
             <div ref={messageEndRef} />
           </div>
         </div>
@@ -154,18 +197,20 @@ const MessageBox = () => {
             <button className="text-gray-400 hover:text-white">
               <AiOutlinePaperClip size={20} />
             </button>
+
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message..."
-              className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none"
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent text-white outline-none placeholder-gray-500"
+              placeholder="Type a message"
             />
             <button
               onClick={handleSendMessage}
-              className="text-green-400 hover:text-green-500"
+              className="text-blue-500 hover:text-blue-600"
             >
-              <AiOutlineSend size={20} />
+              <AiOutlineSend size={25} />
             </button>
           </div>
         </div>

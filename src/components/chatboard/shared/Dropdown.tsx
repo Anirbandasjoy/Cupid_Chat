@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { BsThreeDots } from "react-icons/bs";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import LogOutModal from "./LogOutModal";
+import Link from "next/link";
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,16 +38,18 @@ const ProfileDropdown = () => {
       </div>
 
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-48 bg-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+        <div className="absolute -left-24 mt-2 z-50 w-48 bg-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ">
           <div className="py-1">
             {/* Profile Option */}
-            <button
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 w-full"
-              onClick={() => console.log("Profile Clicked")}
-            >
-              <FaUserCircle className="mr-3 text-gray-600" />
-              Profile
-            </button>
+            <Link href="/profile">
+              <button
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 w-full"
+                onClick={() => console.log("Profile Clicked")}
+              >
+                <FaUserCircle className="mr-3 text-gray-600" />
+                Profile
+              </button>
+            </Link>
 
             {/* Logout Option */}
             <button
